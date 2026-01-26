@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -480,7 +480,7 @@
 	};
 
 	chosen {
-		bootargs = "rcupdate.rcu_expedited=1 cgroup.memory=nokmem,nosocket";
+		bootargs = "rcupdate.rcu_expedited=1";
 	};
 
 	soc: soc { };
@@ -495,11 +495,11 @@
 	firmware: firmware {
 		android {
 			compatible = "android,firmware";
-			boot_devices = "soc/1d84000.ufshc";
 			vbmeta {
 				compatible = "android,vbmeta";
 				parts = "vbmeta,boot,system,vendor,dtbo";
 			};
+
 			fstab {
 				compatible = "android,fstab";
 				vendor {
@@ -508,7 +508,6 @@
 					type = "ext4";
 					mnt_flags = "ro,barrier=1,discard";
 					fsmgr_flags = "wait,slotselect,avb";
-					status = "disabled";
 				};
 			};
 		};
@@ -648,12 +647,18 @@
 			alignment = <0 0x400000>;
 			size = <0 0x5c00000>;
 		};
-
 		dump_mem: mem_dump_region {
 			compatible = "shared-dma-pool";
 			reusable;
 			size = <0 0x2400000>;
 		};
+
+       	        asus_debug_mem: asus_debug_region@0 {
+       	                 compatible = "removed-dma-pool";
+       	                 no-map;
+   		         reg = <0x0 0xA0000000 0x0 0x00300000>;
+       		};
+
 
 		/* global autoconfigured region for contiguous allocations */
 		linux,cma {
@@ -1549,7 +1554,6 @@
 		vdd_mss-supply = <&pm8005_s2_level>;
 		vdd_mss-uV = <RPMH_REGULATOR_LEVEL_TURBO>;
 		qcom,firmware-name = "modem";
-		qcom,sequential-fw-load;
 		qcom,pil-self-auth;
 		qcom,sysmon-id = <0>;
 		qcom,minidump-id = <3>;
@@ -1855,30 +1859,11 @@
 			iommus = <&apps_smmu 0x1406 0x30>;
 			dma-coherent;
 		};
-		qcom,msm_fastrpc_compute_cb7 {
-			compatible = "qcom,msm-fastrpc-compute-cb";
-			label = "cdsprpc-smd";
-			iommus = <&apps_smmu 0x1407 0x30>;
-			dma-coherent;
-		};
-		qcom,msm_fastrpc_compute_cb8 {
-			compatible = "qcom,msm-fastrpc-compute-cb";
-			label = "cdsprpc-smd";
-			iommus = <&apps_smmu 0x1408 0x30>;
-			dma-coherent;
-		};
 		qcom,msm_fastrpc_compute_cb9 {
 			compatible = "qcom,msm-fastrpc-compute-cb";
 			label = "cdsprpc-smd";
 			qcom,secure-context-bank;
 			iommus = <&apps_smmu 0x1409 0x30>;
-			dma-coherent;
-		};
-		qcom,msm_fastrpc_compute_cb10 {
-			compatible = "qcom,msm-fastrpc-compute-cb";
-			label = "cdsprpc-smd";
-			qcom,secure-context-bank;
-			iommus = <&apps_smmu 0x140A 0x30>;
 			dma-coherent;
 		};
 		qcom,msm_fastrpc_compute_cb11 {
@@ -2509,7 +2494,6 @@
 		qcom,support-fde;
 		qcom,no-clock-support;
 		qcom,fde-key-size;
-		qcom,commonlib64-loaded-by-uefi;
 		qcom,msm-bus,name = "qseecom-noc";
 		qcom,msm-bus,num-cases = <4>;
 		qcom,msm-bus,num-paths = <1>;
@@ -2650,7 +2634,7 @@
 
 	qcom,rmtfs_sharedmem@0 {
 		compatible = "qcom,sharedmem-uio";
-		reg = <0x0 0x200000>;
+		reg = <0x0 0x500000>;
 		reg-names = "rmtfs";
 		qcom,client-id = <0x00000001>;
 		qcom,guard-memory;
@@ -3179,7 +3163,6 @@
 			polling-delay = <0>;
 			thermal-governor = "user_space";
 			thermal-sensors = <&tsens0 0>;
-			wake-capable-sensor;
 			trips {
 				active-config0 {
 					temperature = <125000>;
@@ -3194,17 +3177,10 @@
 			polling-delay = <0>;
 			thermal-governor = "user_space";
 			thermal-sensors = <&tsens0 1>;
-			wake-capable-sensor;
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3215,17 +3191,10 @@
 			polling-delay = <0>;
 			thermal-governor = "user_space";
 			thermal-sensors = <&tsens0 2>;
-			wake-capable-sensor;
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3236,17 +3205,10 @@
 			polling-delay = <0>;
 			thermal-governor = "user_space";
 			thermal-sensors = <&tsens0 3>;
-			wake-capable-sensor;
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3256,18 +3218,11 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 4>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3277,7 +3232,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 5>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3292,7 +3246,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 6>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3307,18 +3260,11 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 7>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3328,18 +3274,11 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 8>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3349,18 +3288,11 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 9>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3370,18 +3302,11 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 10>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3391,18 +3316,11 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 11>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3413,17 +3331,10 @@
 			polling-delay = <0>;
 			thermal-governor = "user_space";
 			thermal-sensors = <&tsens0 12>;
-			wake-capable-sensor;
 			trips {
 				active-config0 {
 					temperature = <125000>;
 					hysteresis = <1000>;
-					type = "passive";
-				};
-
-				thermal-hal-cfg {
-					temperature = <115000>;
-					hysteresis = <5000>;
 					type = "passive";
 				};
 			};
@@ -3433,7 +3344,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 0>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3448,7 +3358,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 1>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3465,7 +3374,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 2>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3480,7 +3388,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 3>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3495,7 +3402,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 4>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3510,7 +3416,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 5>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3525,7 +3430,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 6>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3540,7 +3444,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 7>;
-			wake-capable-sensor;
 			thermal-governor = "user_space";
 			trips {
 				active-config0 {
@@ -3555,7 +3458,6 @@
 			polling-delay-passive = <10>;
 			polling-delay = <100>;
 			thermal-governor = "step_wise";
-			wake-capable-sensor;
 			trips {
 				gpu_trip0: gpu-trip0 {
 					temperature = <95000>;
@@ -3576,7 +3478,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-governor = "step_wise";
-			wake-capable-sensor;
 			trips {
 				silver-trip {
 					temperature = <120000>;
@@ -3590,7 +3491,6 @@
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-governor = "step_wise";
-			wake-capable-sensor;
 			trips {
 				gold-trip {
 					temperature = <120000>;
@@ -3604,7 +3504,6 @@
 			polling-delay-passive = <10>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens1 2>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				pop_trip: pop-trip {
@@ -3645,7 +3544,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 1>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config0: emerg-config0 {
@@ -3668,7 +3566,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 2>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config1: emerg-config1 {
@@ -3691,7 +3588,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 3>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config2: emerg-config2 {
@@ -3714,7 +3610,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 4>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config3: emerg-config3 {
@@ -3737,7 +3632,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 7>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config4: emerg-config4 {
@@ -3760,7 +3654,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 8>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config5: emerg-config5 {
@@ -3783,7 +3676,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 9>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config6: emerg-config6 {
@@ -3806,7 +3698,6 @@
 			polling-delay-passive = <100>;
 			polling-delay = <0>;
 			thermal-sensors = <&tsens0 10>;
-			wake-capable-sensor;
 			thermal-governor = "step_wise";
 			trips {
 				emerg_config7: emerg-config7 {
@@ -3830,11 +3721,10 @@
 			polling-delay = <0>;
 			thermal-governor = "user_space";
 			thermal-sensors = <&lmh_dcvs1>;
-			wake-capable-sensor;
 
 			trips {
 				active-config {
-					temperature = <95000>;
+					temperature = <105000>;
 					hysteresis = <30000>;
 					type = "passive";
 				};
@@ -3846,11 +3736,10 @@
 			polling-delay = <0>;
 			thermal-governor = "user_space";
 			thermal-sensors = <&lmh_dcvs0>;
-			wake-capable-sensor;
 
 			trips {
 				active-config {
-					temperature = <95000>;
+					temperature = <105000>;
 					hysteresis = <30000>;
 					type = "passive";
 				};
@@ -4072,7 +3961,7 @@
 		qcom,smmu-fast-map;
 		qcom,smmu-coherent;
 		qcom,keep-radio-on-during-sleep;
-		status = "disabled";
+		status = "ok";
 	};
 };
 
@@ -4163,7 +4052,6 @@
 
 &gpu_cx_gdsc {
 	parent-supply = <&pm8998_s9_level>;
-	vdd_parent-supply = <&pm8998_s9_level>;
 	status = "ok";
 };
 
@@ -4300,7 +4188,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 0>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			aoss0_trip: aoss0-trip {
@@ -4358,7 +4245,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 1>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpu0_trip: cpu0-trip {
@@ -4416,7 +4302,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 2>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpu1_trip: cpu1-trip {
@@ -4474,7 +4359,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 3>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpu2_trip: cpu2-trip {
@@ -4532,7 +4416,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 4>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpu3_trip: cpu3-trip {
@@ -4590,7 +4473,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 5>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			l3_0_trip: l3-0-trip {
@@ -4648,7 +4530,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 6>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			l3_1_trip: l3-1-trip {
@@ -4706,7 +4587,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 7>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpug0_trip: cpug0-trip {
@@ -4764,7 +4644,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 8>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpug1_trip: cpug1-trip {
@@ -4822,7 +4701,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 9>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpug2_trip: cpug2-trip {
@@ -4880,7 +4758,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 10>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			cpug3_trip: cpug3-trip {
@@ -4938,7 +4815,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 11>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			gpu0_trip_l: gpu0-trip {
@@ -4996,7 +4872,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens0 12>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			gpu1_trip_l: gpu1-trip_l {
@@ -5054,7 +4929,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 0>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			aoss1_trip: aoss1-trip {
@@ -5112,7 +4986,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 1>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			dsp_trip: dsp-trip {
@@ -5170,7 +5043,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 2>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			ddr_trip: ddr-trip {
@@ -5228,7 +5100,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 3>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			wlan_trip: wlan-trip {
@@ -5286,7 +5157,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 4>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			hvx_trip: hvx-trip {
@@ -5344,7 +5214,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 5>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			camera_trip: camera-trip {
@@ -5402,7 +5271,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 6>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			mmss_trip: mmss-trip {
@@ -5460,7 +5328,6 @@
 		polling-delay = <0>;
 		thermal-governor = "low_limits_floor";
 		thermal-sensors = <&tsens1 7>;
-		wake-capable-sensor;
 		tracks-low;
 		trips {
 			mdm_trip: mdm-trip {
