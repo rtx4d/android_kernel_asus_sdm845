@@ -4,95 +4,47 @@ dtb-$(CONFIG_ARCH_QCOM)	+= apq8096-db820c.dtb
 
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
 	dtbo-$(CONFIG_ARCH_SDM845) += \
-		sdm845-cdp-overlay.dtbo \
-		sdm845-mtp-overlay.dtbo \
-		sdm845-qrd-overlay.dtbo \
-		sdm845-4k-panel-mtp-overlay.dtbo \
-		sdm845-4k-panel-cdp-overlay.dtbo \
-		sdm845-4k-panel-qrd-overlay.dtbo \
-		sdm845-v2-qvr-evt-overlay.dtbo \
-		sdm845-v2-qvr-dvt-overlay.dtbo \
-		sdm845-v2-cdp-overlay.dtbo \
 		sdm845-v2-mtp-overlay.dtbo \
-		sdm845-v2-qrd-overlay.dtbo \
-		sdm845-v2-4k-panel-mtp-overlay.dtbo \
-		sdm845-v2-4k-panel-cdp-overlay.dtbo \
-		sdm845-v2-4k-panel-qrd-overlay.dtbo \
-		sdm845-v2.1-cdp-overlay.dtbo \
 		sdm845-v2.1-mtp-overlay.dtbo \
-		sdm845-v2.1-qrd-overlay.dtbo \
-		sdm845-v2.1-4k-panel-mtp-overlay.dtbo \
-		sdm845-v2.1-4k-panel-cdp-overlay.dtbo \
-		sdm845-v2.1-4k-panel-qrd-overlay.dtbo \
-		sda845-cdp-overlay.dtbo \
-		sda845-mtp-overlay.dtbo \
-		sda845-qrd-overlay.dtbo \
-		sda845-4k-panel-mtp-overlay.dtbo \
-		sda845-4k-panel-cdp-overlay.dtbo \
-		sda845-4k-panel-qrd-overlay.dtbo \
-		sda845-v2-cdp-overlay.dtbo \
-		sda845-v2-mtp-overlay.dtbo \
-		sda845-v2-qrd-overlay.dtbo \
-		sda845-v2-hdk-overlay.dtbo \
-		sda845-v2-svr-overlay.dtbo \
-		sda845-v2-4k-panel-mtp-overlay.dtbo \
-		sda845-v2-4k-panel-cdp-overlay.dtbo \
-		sda845-v2-4k-panel-qrd-overlay.dtbo \
-		sda845-v2.1-cdp-overlay.dtbo \
-		sda845-v2.1-mtp-overlay.dtbo \
-		sda845-v2.1-qrd-overlay.dtbo \
-		sda845-v2.1-svr-overlay.dtbo \
-		sda845-v2.1-4k-panel-cdp-overlay.dtbo \
-		sda845-v2.1-4k-panel-mtp-overlay.dtbo \
-		sda845-v2.1-4k-panel-qrd-overlay.dtbo \
-		sda845-v2.1-cdp-sdxpoorwills-overlay.dtbo \
-		sda845-v2.1-mtp-sdxpoorwills-overlay.dtbo \
-		sda845-v2-mtp-sdxpoorwills-overlay.dtbo
+		ZS600KL-EVB-asus-overlay.dtbo \
+		ZS600KL-EVB-SKU1-asus-overlay.dtbo \
+		ZS600KL-EVB-SKU2-asus-overlay.dtbo \
+		ZS600KL-EVB-ProtoSKU1-asus-overlay.dtbo \
+		ZS600KL-EVB-ProtoSKU2-asus-overlay.dtbo \
+		ZS600KL-SR1-asus-overlay.dtbo \
+		ZS600KL-SR1-SKU1-asus-overlay.dtbo \
+		ZS600KL-SR1EVB-asus-overlay.dtbo \
+		ZS600KL-SR1EVB-SKU1-asus-overlay.dtbo \
+                ZS600KL-SR2-asus-overlay.dtbo \
+                ZS600KL-ER1-asus-overlay.dtbo \
+                ZS600KL-ERAC-asus-overlay.dtbo \
+                ZS600KL-PR1_AC-asus-overlay.dtbo \
+                ZS600KL-PR1_nonAC_4CA-asus-overlay.dtbo \
+                ZS600KL-PR1_nonAC_5CA-asus-overlay.dtbo \
+                ZS600KL-MP_AC-asus-overlay.dtbo \
+                ZS600KL-MP_nonAC_4CA-asus-overlay.dtbo \
+                ZS600KL-MP_nonAC_5CA-asus-overlay.dtbo
 
-sdm845-cdp-overlay.dtbo-base := sdm845.dtb
-sdm845-mtp-overlay.dtbo-base := sdm845.dtb
-sdm845-qrd-overlay.dtbo-base := sdm845.dtb
-sdm845-4k-panel-mtp-overlay.dtbo-base := sdm845.dtb
-sdm845-4k-panel-cdp-overlay.dtbo-base := sdm845.dtb
-sdm845-4k-panel-qrd-overlay.dtbo-base := sdm845.dtb
-sdm845-v2-qvr-evt-overlay.dtbo-base := sdm845-v2.dtb
-sdm845-v2-qvr-dvt-overlay.dtbo-base := sdm845-v2.dtb
-sdm845-v2-cdp-overlay.dtbo-base := sdm845-v2.dtb
 sdm845-v2-mtp-overlay.dtbo-base := sdm845-v2.dtb
-sdm845-v2-qrd-overlay.dtbo-base := sdm845-v2.dtb
-sdm845-v2-4k-panel-mtp-overlay.dtbo-base := sdm845-v2.dtb
-sdm845-v2-4k-panel-cdp-overlay.dtbo-base := sdm845-v2.dtb
-sdm845-v2-4k-panel-qrd-overlay.dtbo-base := sdm845-v2.dtb
-sdm845-v2.1-cdp-overlay.dtbo-base := sdm845-v2.1.dtb
 sdm845-v2.1-mtp-overlay.dtbo-base := sdm845-v2.1.dtb
-sdm845-v2.1-qrd-overlay.dtbo-base := sdm845-v2.1.dtb
-sdm845-v2.1-4k-panel-mtp-overlay.dtbo-base := sdm845-v2.1.dtb
-sdm845-v2.1-4k-panel-cdp-overlay.dtbo-base := sdm845-v2.1.dtb
-sdm845-v2.1-4k-panel-qrd-overlay.dtbo-base := sdm845-v2.1.dtb
-sda845-cdp-overlay.dtbo-base := sda845.dtb
-sda845-mtp-overlay.dtbo-base := sda845.dtb
-sda845-qrd-overlay.dtbo-base := sda845.dtb
-sda845-4k-panel-mtp-overlay.dtbo-base := sda845.dtb
-sda845-4k-panel-cdp-overlay.dtbo-base := sda845.dtb
-sda845-4k-panel-qrd-overlay.dtbo-base := sda845.dtb
-sda845-v2-cdp-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2-mtp-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2-qrd-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2-hdk-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2-svr-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2-4k-panel-mtp-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2-4k-panel-cdp-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2-4k-panel-qrd-overlay.dtbo-base := sda845-v2.dtb
-sda845-v2.1-cdp-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-mtp-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-qrd-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-svr-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-4k-panel-cdp-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-4k-panel-mtp-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-4k-panel-qrd-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-cdp-sdxpoorwills-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2.1-mtp-sdxpoorwills-overlay.dtbo-base := sda845-v2.1.dtb
-sda845-v2-mtp-sdxpoorwills-overlay.dtbo-base := sda845-v2.dtb
+ZS600KL-EVB-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-EVB-SKU1-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-EVB-SKU2-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-EVB-ProtoSKU1-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-EVB-ProtoSKU2-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-SR1-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-SR1-SKU1-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-SR1EVB-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-SR1EVB-SKU1-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-SR2-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-ER1-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-ERAC-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-PR1_AC-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-PR1_nonAC_4CA-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-PR1_nonAC_5CA-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-MP_AC-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-MP_nonAC_4CA-asus-overlay.dtbo-base := sdm845-v2.dtb
+ZS600KL-MP_nonAC_5CA-asus-overlay.dtbo-base := sdm845-v2.dtb
 else
 dtb-$(CONFIG_ARCH_SDM845) += sdm845-sim.dtb \
 	sdm845-rumi.dtb \
@@ -336,7 +288,6 @@ endif
 
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
 dtbo-$(CONFIG_ARCH_MSM8940) += msm8940-mtp-overlay.dtbo
-dtbo-$(CONFIG_ARCH_MSM8940) += msm8940-cdp-overlay.dtbo
 
 dtbo-$(CONFIG_ARCH_MSM8917) += msm8917-mtp-overlay.dtbo \
 	msm8917-qrd-overlay.dtbo \
@@ -349,7 +300,6 @@ dtbo-$(CONFIG_ARCH_MSM8917) += msm8917-mtp-overlay.dtbo \
 	apq8017-cdp-wcd-rome-overlay.dtbo
 
 dtbo-$(CONFIG_ARCH_QM215) +=qm215-qrd-overlay.dtbo
-dtbo-$(CONFIG_ARCH_QM215) +=qm215-qrd-smb1360-overlay.dtbo
 
 dtbo-$(CONFIG_ARCH_MSM8953) += msm8953-mtp-overlay.dtbo \
 	msm8953-cdp-overlay.dtbo \
@@ -393,10 +343,6 @@ msm8940-mtp-overlay.dtbo-base := msm8940-pmi8950.dtb \
 	msm8940-pmi8937.dtb \
 	msm8940-pmi8940.dtb
 
-msm8940-cdp-overlay.dtbo-base := msm8940-pmi8950.dtb \
-	msm8940-pmi8937.dtb \
-	msm8940-pmi8940.dtb
-
 msm8917-mtp-overlay.dtbo-base := msm8917-pmi8950.dtb \
 	msm8917-pmi8937.dtb \
 	msm8917-pmi8940.dtb
@@ -426,7 +372,6 @@ apq8017-cdp-wcd-rome-overlay.dtbo-base := apq8017-pmi8950.dtb \
 	apq8017-pmi8937.dtb
 
 qm215-qrd-overlay.dtbo-base := qm215.dtb
-qm215-qrd-smb1360-overlay.dtbo-base := qm215.dtb
 
 msm8953-mtp-overlay.dtbo-base := sdm450.dtb \
 	msm8953.dtb \
@@ -565,7 +510,6 @@ dtb-$(CONFIG_ARCH_MSM8917) += msm8917-pmi8950-mtp.dtb \
 	msm8917-pmi8940-rcm.dtb
 
 dtb-$(CONFIG_ARCH_QM215) += qm215-qrd.dtb
-dtb-$(CONFIG_ARCH_QM215) += qm215-qrd-smb1360.dtb
 
 dtb-$(CONFIG_ARCH_MSM8909) += sdw3100-msm8909w-wtp.dtb \
 	sdw3100-apq8009w-wtp.dtb \
@@ -576,10 +520,7 @@ dtb-$(CONFIG_ARCH_MSM8909) += sdw3100-msm8909w-wtp.dtb \
 	apq8009-robot-pronto-refboard.dtb \
 	apq8009-dragon.dtb \
 	apq8009-lat-v1.0.dtb \
-	sdw3100-msm8909w-1gb-wtp.dtb \
-	sdw2500-apq8009w-wtp.dtb \
-	sdw2500-msm8909w-wtp.dtb
-
+	sdw3100-msm8909w-1gb-wtp.dtb
 
 dtb-$(CONFIG_ARCH_SDM450) += sdm450-rcm.dtb \
 	sdm450-cdp.dtb \
@@ -619,8 +560,7 @@ dtb-$(CONFIG_ARCH_SDM439) += sdm439-mtp.dtb \
 	sda439-cdp.dtb \
 	sdm439-external-codec-mtp.dtb \
 	sdm439-rcm.dtb \
-	qm215-qrd.dtb \
-	qm215-qrd-smb1360.dtb
+	qm215-qrd.dtb
 
 dtb-$(CONFIG_ARCH_SDM429) += sdm429-mtp.dtb \
 	sdm429-cdp.dtb \
