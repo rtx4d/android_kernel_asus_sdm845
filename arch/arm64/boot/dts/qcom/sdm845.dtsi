@@ -495,9 +495,21 @@
 	firmware: firmware {
 		android {
 			compatible = "android,firmware";
+			boot_devices = "soc/1d84000.ufshc";
 			vbmeta {
 				compatible = "android,vbmeta";
 				parts = "vbmeta,boot,system,vendor,dtbo";
+			};
+			fstab {
+				compatible = "android,fstab";
+				vendor {
+					compatible = "android,vendor";
+					dev = "/dev/block/platform/soc/1d84000.ufshc/by-name/vendor";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1,discard";
+					fsmgr_flags = "wait,slotselect,avb";
+					status = "disabled";
+				};
 			};
 		};
 	};
@@ -651,16 +663,6 @@
 			alignment = <0 0x400000>;
 			size = <0 0x2000000>;
 			linux,cma-default;
-		};
-
-		ramoops: ramoops@97f00000 {
-			compatible = "ramoops";
-			reg = <0 0x97f00000 0 0x00400000>;
-			record-size = <0x40000>; /*256x1024*/
-			console-size = <0x40000>;
-			ftrace-size = <0x40000>;
-			pmsg-size = <0x200000>;
-			ecc-size = <0x10>;
 		};
 	};
 };
@@ -1047,18 +1049,6 @@
 		status = "ok";
 		qcom,bw-tbl =
 			< 1 >;
-	};
-
-	bus_proxy_client: qcom,bus_proxy_client {
-		compatible = "qcom,bus-proxy-client";
-		qcom,msm-bus,name = "bus-proxy-client";
-		qcom,msm-bus,num-cases = <2>;
-		qcom,msm-bus,num-paths = <2>;
-		qcom,msm-bus,vectors-KBps =
-			<22 512 0 0>, <23 512 0 0>,
-			<22 512 0 5000000>, <23 512 0 5000000>;
-		qcom,msm-bus,active-only;
-		status = "ok";
 	};
 
 	devfreq_memlat_0: qcom,cpu0-memlat-mon {
@@ -3989,7 +3979,6 @@
 
 	tspp: msm_tspp@0x8880000 {
 		compatible = "qcom,msm_tspp";
-		status = "disabled";
 		reg = <0x088a7000 0x200>, /* MSM_TSIF0_PHYS */
 		      <0x088a8000 0x200>, /* MSM_TSIF1_PHYS */
 		      <0x088a9000 0x1000>, /* MSM_TSPP_PHYS  */
