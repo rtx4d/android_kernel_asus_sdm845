@@ -1253,6 +1253,11 @@ static int qseecom_unregister_listener(struct qseecom_dev_handle *data)
 	struct qseecom_command_scm_resp resp;
 	struct ion_handle *ihandle = NULL;		/* Retrieve phy addr */
 
+	if (data->released) {
+		pr_err("Don't unregister lsnr %d\n", data->listener.id);
+		return -EINVAL;
+	}
+
 	ptr_svc = __qseecom_find_svc(data->listener.id);
 	if (!ptr_svc) {
 		pr_err("Unregiser invalid listener ID %d\n", data->listener.id);
