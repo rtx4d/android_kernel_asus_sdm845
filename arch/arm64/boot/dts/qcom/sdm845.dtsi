@@ -655,6 +655,12 @@
 			size = <0 0x2400000>;
 		};
 
+		asus_debug_mem: asus_debug_region@0 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0x0 0xA0000000 0x0 0x00300000>;
+		};
+
 		/* global autoconfigured region for contiguous allocations */
 		linux,cma {
 			compatible = "shared-dma-pool";
@@ -2650,7 +2656,7 @@
 
 	qcom,rmtfs_sharedmem@0 {
 		compatible = "qcom,sharedmem-uio";
-		reg = <0x0 0x200000>;
+		reg = <0x0 0x500000>;
 		reg-names = "rmtfs";
 		qcom,client-id = <0x00000001>;
 		qcom,guard-memory;
@@ -3834,7 +3840,7 @@
 
 			trips {
 				active-config {
-					temperature = <95000>;
+					temperature = <105000>;
 					hysteresis = <30000>;
 					type = "passive";
 				};
@@ -3850,7 +3856,7 @@
 
 			trips {
 				active-config {
-					temperature = <95000>;
+					temperature = <105000>;
 					hysteresis = <30000>;
 					type = "passive";
 				};
@@ -4072,7 +4078,7 @@
 		qcom,smmu-fast-map;
 		qcom,smmu-coherent;
 		qcom,keep-radio-on-during-sleep;
-		status = "disabled";
+		status = "ok";
 	};
 };
 
