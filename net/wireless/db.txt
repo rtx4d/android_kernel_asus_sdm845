@@ -41,6 +41,8 @@ country AL: DFS-ETSI
 	(5250 - 5330 @ 80), (23), DFS, AUTO-BW, NO-OUTDOOR
 	(5490 - 5730 @ 160), (30), DFS
 	(5735 - 5875 @ 80), (14)
+	# 60 gHz band channels 1-4, ref: Etsi En 302 567
+	(57240 - 65880 @ 2160), (40), NO-OUTDOOR
 
 country AM: DFS-ETSI
 	(2402 - 2482 @ 40), (20)
