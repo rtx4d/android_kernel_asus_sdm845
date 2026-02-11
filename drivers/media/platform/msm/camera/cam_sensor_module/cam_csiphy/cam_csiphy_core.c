@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020, 2021 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,8 +15,6 @@
 #include "cam_csiphy_dev.h"
 #include "cam_csiphy_soc.h"
 #include "cam_common_util.h"
-#include "cam_packet_util.h"
-
 
 #include <soc/qcom/scm.h>
 #include <cam_mem_mgr.h>
@@ -33,7 +31,6 @@ static int cam_csiphy_notify_secure_mode(struct csiphy_device *csiphy_dev,
 	bool protect, int32_t offset)
 {
 	struct scm_desc desc = {0};
-	int result = -1;
 
 	if (offset >= CSIPHY_MAX_INSTANCES)
 		return -EINVAL;
@@ -41,19 +38,8 @@ static int cam_csiphy_notify_secure_mode(struct csiphy_device *csiphy_dev,
 	desc.args[0] = protect;
 	desc.args[1] = csiphy_dev->csiphy_cpas_cp_reg_mask[offset];
 
-	/*
-	 * If SECURE_SYSCALL_ID_2 is not supported
-	 * then fallback to SECURE_SYSCALL_ID
-	 */
-	result = scm_call2(SCM_SIP_FNID(SCM_SVC_CAMERASS, SECURE_SYSCALL_ID_2),
-		&desc);
-	if (result == -EOPNOTSUPP) {
-		desc.args[1] = csiphy_dev->soc_info.index;
-		CAM_ERR(CAM_CSIPHY, "SCM CALL 7 not supported fallback to 6");
-		result = scm_call2(SCM_SIP_FNID(SCM_SVC_CAMERASS,
-						SECURE_SYSCALL_ID), &desc);
-	}
-	if (result) {
+	if (scm_call2(SCM_SIP_FNID(SCM_SVC_CAMERASS, SECURE_SYSCALL_ID_2),
+		&desc)) {
 		CAM_ERR(CAM_CSIPHY, "scm call to hypervisor failed");
 		return -EINVAL;
 	}
@@ -170,7 +156,6 @@ int32_t cam_cmd_buf_parser(struct csiphy_device *csiphy_dev,
 	uint32_t                *cmd_buf = NULL;
 	struct cam_csiphy_info  *cam_cmd_csiphy_info = NULL;
 	size_t                  len;
-	size_t                  remain_len;
 
 	if (!cfg_dev || !csiphy_dev) {
 		CAM_ERR(CAM_CSIPHY, "Invalid Args");
@@ -184,24 +169,15 @@ int32_t cam_cmd_buf_parser(struct csiphy_device *csiphy_dev,
 		return rc;
 	}
 
-	remain_len = len;
-	if ((sizeof(struct cam_packet) > len) ||
-		((size_t)cfg_dev->offset >= len - sizeof(struct cam_packet))) {
+	if (cfg_dev->offset > len) {
 		CAM_ERR(CAM_CSIPHY,
 			"offset is out of bounds: offset: %lld len: %zu",
 			cfg_dev->offset, len);
 		return -EINVAL;
 	}
 
-	remain_len -= (size_t)cfg_dev->offset;
 	csl_packet = (struct cam_packet *)
 		(generic_ptr + (uint32_t)cfg_dev->offset);
-
-	if (cam_packet_util_validate_packet(csl_packet,
-		remain_len)) {
-		CAM_ERR(CAM_CSIPHY, "Invalid packet params");
-		return -EINVAL;
-	}
 
 	cmd_desc = (struct cam_cmd_buf_desc *)
 		((uint32_t *)&csl_packet->payload +
@@ -213,13 +189,6 @@ int32_t cam_cmd_buf_parser(struct csiphy_device *csiphy_dev,
 		CAM_ERR(CAM_CSIPHY,
 			"Failed to get cmd buf Mem address : %d", rc);
 		return rc;
-	}
-
-	if ((len < sizeof(struct cam_csiphy_info)) ||
-		(cmd_desc->offset > (len - sizeof(struct cam_csiphy_info)))) {
-		CAM_ERR(CAM_CSIPHY,
-			"Not enough buffer provided for cam_cisphy_info");
-		return -EINVAL;
 	}
 
 	cmd_buf = (uint32_t *)generic_ptr;
@@ -629,12 +598,6 @@ int32_t cam_csiphy_core_cfg(void *phy_dev,
 
 		csiphy_acq_dev.device_handle =
 			cam_create_device_hdl(&bridge_params);
-		if (csiphy_acq_dev.device_handle <= 0) {
-			rc = -EFAULT;
-			CAM_ERR(CAM_CSIPHY, "Can not create device handle");
-			goto release_mutex;
-		}
-
 		bridge_intf = &csiphy_dev->bridge_intf;
 		bridge_intf->device_hdl[csiphy_acq_params.combo_mode]
 			= csiphy_acq_dev.device_handle;

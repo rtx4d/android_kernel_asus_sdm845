@@ -59,14 +59,14 @@ static phys_addr_t tcsr_boot_misc_detect;
 static void scm_disable_sdi(void);
 static bool force_warm_reboot;
 
-#ifdef CONFIG_QCOM_DLOAD_MODE
+#ifdef ASUS_SHIP_BUILD
 /* Runtime could be only changed value once.
  * There is no API from TZ to re-enable the registers.
  * So the SDI cannot be re-enabled when it already by-passed.
  */
-static int download_mode = 1;
+static int download_mode = 0;
 #else
-static const int download_mode;
+static int download_mode = 1;
 #endif
 
 #ifdef CONFIG_QCOM_DLOAD_MODE
@@ -281,6 +281,7 @@ static void halt_spmi_pmic_arbiter(void)
 
 static void msm_restart_prepare(const char *cmd)
 {
+	ulong *printk_buffer_slot2_addr;
 	bool need_warm_reset = false;
 #ifdef CONFIG_QCOM_DLOAD_MODE
 	/* Write download mode flags if we're panic'ing
@@ -301,6 +302,12 @@ static void msm_restart_prepare(const char *cmd)
 	} else {
 		need_warm_reset = (get_dload_mode() ||
 				(cmd != NULL && cmd[0] != '\0'));
+	}
+
+	if (!in_panic) {
+		// Normal reboot. Clean the printk buffer magic
+		printk_buffer_slot2_addr = (ulong *)PRINTK_BUFFER_SLOT2;
+		*printk_buffer_slot2_addr = 0;
 	}
 
 	if (force_warm_reboot)
@@ -333,6 +340,22 @@ static void msm_restart_prepare(const char *cmd)
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_DMVERITY_ENFORCE);
 			__raw_writel(0x77665509, restart_reason);
+		// +++ ASUS_BSP: add asus reboot reason for ATD interface
+		} else if (!strcmp(cmd, "shutdown")) {
+			qpnp_pon_set_restart_reason(
+				PON_RESTART_REASON_SHUTDOWN);
+			__raw_writel(0x6f656d88, restart_reason);
+		} else if (!strcmp(cmd, "EnterShippingMode")) {
+			qpnp_pon_set_restart_reason(
+				PON_RESTART_REASON_SHIPMODE);
+			__raw_writel(0x6f656d43, restart_reason);
+		// --- ASUS_BSP: add asus reboot reason for ATD interface
+		// +++ ASUS_BSP: add for asus user unlock	
+		} else if (!strncmp(cmd, "oem-08", 6)) {
+				qpnp_pon_set_restart_reason(
+				PON_RESTART_REASON_UNLOCK);		
+			__raw_writel(0x6f656d08, restart_reason);
+		// --- ASUS_BSP: add for asus user unlock
 		} else if (!strcmp(cmd, "keys clear")) {
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_KEYS_CLEAR);
@@ -407,6 +430,7 @@ static void do_msm_restart(enum reboot_mode reboot_mode, const char *cmd)
 	pr_notice("Going down for restart now\n");
 
 	msm_restart_prepare(cmd);
+	flush_cache_all();
 
 #ifdef CONFIG_QCOM_DLOAD_MODE
 	/*
@@ -427,7 +451,15 @@ static void do_msm_restart(enum reboot_mode reboot_mode, const char *cmd)
 
 static void do_msm_poweroff(void)
 {
+	ulong *printk_buffer_slot2_addr;
+
 	pr_notice("Powering off the SoC\n");
+	// Normal power off. Clean the printk buffer magic
+	printk_buffer_slot2_addr = (ulong *)PRINTK_BUFFER_SLOT2;
+	*printk_buffer_slot2_addr = 0;
+
+	printk(KERN_CRIT "Clean asus_global...\n");
+	flush_cache_all();
 
 	set_dload_mode(0);
 	scm_disable_sdi();
@@ -685,8 +717,8 @@ skip_sysfs_create:
 		scm_deassert_ps_hold_supported = true;
 
 	set_dload_mode(download_mode);
-	if (!download_mode)
-		scm_disable_sdi();
+//	if (!download_mode)
+//		scm_disable_sdi();
 
 	force_warm_reboot = of_property_read_bool(dev->of_node,
 						"qcom,force-warm-reboot");

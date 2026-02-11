@@ -1963,6 +1963,7 @@ static const struct hid_device_id hid_have_special_driver[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_AK1D) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_ACER_SWITCH12) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CORSAIR, USB_DEVICE_ID_CORSAIR_K90) },
+	{ HID_USB_DEVICE(USB_VENDOR_ID_CORSAIR, USB_DEVICE_ID_CORSAIR_GLAIVE_RGB) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CORSAIR, USB_DEVICE_ID_CORSAIR_SCIMITAR_PRO_RGB) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CREATIVELABS, USB_DEVICE_ID_PRODIKEYS_PCMIDI) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CYGNAL, USB_DEVICE_ID_CYGNAL_CP2112) },
@@ -2227,6 +2228,10 @@ static const struct hid_device_id hid_have_special_driver[] = {
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_NINTENDO, USB_DEVICE_ID_NINTENDO_WIIMOTE2) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_RAZER, USB_DEVICE_ID_RAZER_BLADE_14) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CMEDIA, USB_DEVICE_ID_CM6533) },
+	{ HID_USB_DEVICE(0x048D, 0x8910) },
+	{ HID_USB_DEVICE(0x048D, 0x89DB) },
+	{ HID_USB_DEVICE(0x0CF2, 0x7750) },
+	{ HID_USB_DEVICE(0x0CF2, 0x7758) },
 	{ }
 };
 
@@ -2339,6 +2344,7 @@ static int hid_device_probe(struct device *dev)
 
 		hdev->driver = hdrv;
 		if (hdrv->probe) {
+		pr_info("[USB] hid_device_probe, driver name=%s\n",hdev->driver->name);
 			ret = hdrv->probe(hdev, id);
 		} else { /* default probe */
 			ret = hid_open_report(hdev);

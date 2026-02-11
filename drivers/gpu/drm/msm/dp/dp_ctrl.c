@@ -1389,6 +1389,20 @@ static void dp_ctrl_reset(struct dp_ctrl *dp_ctrl)
 	ctrl->catalog->reset(ctrl->catalog);
 }
 
+//ASUS_BSP+++
+extern volatile enum POGO_ID ASUS_POGO_ID;
+enum POGO_ID {
+    ERROR1 = 0,
+    NO_INSERT,
+    INBOX,
+    DT,
+    STATION,
+    OTHER,
+};
+bool dp_sleep_in_station = false;
+int dp_aux_retry_count = 0;
+//ASUS_BSP---
+
 static int dp_ctrl_on(struct dp_ctrl *dp_ctrl)
 {
 	int rc = 0;
@@ -1456,6 +1470,12 @@ static int dp_ctrl_on(struct dp_ctrl *dp_ctrl)
 		msleep(20);
 
 		dp_ctrl_enable_mainlink_clocks(ctrl);
+        //ASUS_BSP+++
+        if ((dp_aux_retry_count  > 8) && dp_sleep_in_station) {
+            atomic_set(&ctrl->aborted, 1);
+            pr_err("[DP] aux error count = %d, abort dp ctrl process\n", dp_aux_retry_count);
+        }
+        //ASUS_BSP---
 	}
 
 	if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN)
@@ -1465,6 +1485,10 @@ static int dp_ctrl_on(struct dp_ctrl *dp_ctrl)
 	pr_debug("End-\n");
 
 end:
+    //ASUS_BSP+++
+    dp_sleep_in_station = false;
+    dp_aux_retry_count = 0;
+    //ASUS_BSP---
 	return rc;
 }
 
@@ -1487,6 +1511,14 @@ static void dp_ctrl_off(struct dp_ctrl *dp_ctrl)
 
 	ctrl->power_on = false;
 	pr_debug("DP off done\n");
+    //ASUS_BSP+++
+    if (ASUS_POGO_ID == STATION) {
+        dp_sleep_in_station = true;
+    } else {
+        dp_sleep_in_station = false;
+        dp_aux_retry_count = 0;
+    }
+    //ASUS_BSP---
 }
 
 static void dp_ctrl_isr(struct dp_ctrl *dp_ctrl)

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -274,12 +274,6 @@ static int cam_jpeg_insert_cdm_change_base(
 		CAM_ERR(CAM_JPEG,
 			"unable to get src buf info for cmd buf: %d", rc);
 		return rc;
-	}
-
-	if (config_args->hw_update_entries[CAM_JPEG_CHBASE].offset >=
-		ch_base_len) {
-		CAM_ERR(CAM_JPEG, "Not enough buf");
-		return -EINVAL;
 	}
 	CAM_DBG(CAM_JPEG, "iova %pK len %zu offset %d",
 		(void *)iova_addr, ch_base_len,
@@ -612,7 +606,7 @@ static void cam_jpeg_mgr_print_io_bufs(struct cam_packet *packet,
 	int32_t iommu_hdl, int32_t sec_mmu_hdl, uint32_t pf_buf_info,
 	bool *mem_found)
 {
-	dma_addr_t iova_addr;
+	uint64_t   iova_addr;
 	size_t     src_buf_size;
 	int        i;
 	int        j;
@@ -655,6 +649,11 @@ static void cam_jpeg_mgr_print_io_bufs(struct cam_packet *packet,
 				mmu_hdl, &iova_addr, &src_buf_size);
 			if (rc < 0) {
 				CAM_ERR(CAM_UTIL, "get src buf address fail");
+				continue;
+			}
+			if (iova_addr >> 32) {
+				CAM_ERR(CAM_JPEG, "Invalid mapped address");
+				rc = -EINVAL;
 				continue;
 			}
 
@@ -714,18 +713,17 @@ static int cam_jpeg_mgr_prepare_hw_update(void *hw_mgr_priv,
 		return -EINVAL;
 	}
 
-	rc = cam_packet_util_validate_packet(packet, prepare_args->remain_len);
+	rc = cam_packet_util_validate_packet(packet);
 	if (rc) {
 		CAM_ERR(CAM_JPEG, "invalid packet %d", rc);
 		return rc;
 	}
 
 	if ((packet->num_cmd_buf > 5) || !packet->num_patches ||
-		!packet->num_io_configs ||
-		(packet->num_io_configs > CAM_JPEG_IMAGE_MAX)) {
-		CAM_ERR(CAM_JPEG, "wrong number of cmd/patch info: %u %u %u",
-			packet->num_cmd_buf, packet->num_patches,
-			packet->num_io_configs);
+		!packet->num_io_configs) {
+		CAM_ERR(CAM_JPEG, "wrong number of cmd/patch info: %u %u",
+			packet->num_cmd_buf,
+			packet->num_patches);
 		return -EINVAL;
 	}
 
@@ -1084,6 +1082,8 @@ static int cam_jpeg_mgr_release_hw(void *hw_mgr_priv, void *release_hw_args)
 		cam_cdm_release(hw_mgr->cdm_info[dev_type][0].cdm_handle);
 	}
 
+	mutex_unlock(&hw_mgr->hw_mgr_mutex);
+
 	rc = cam_jpeg_mgr_release_ctx(hw_mgr, ctx_data);
 	if (rc) {
 		mutex_unlock(&hw_mgr->hw_mgr_mutex);
@@ -1094,7 +1094,6 @@ static int cam_jpeg_mgr_release_hw(void *hw_mgr_priv, void *release_hw_args)
 		return -EINVAL;
 	}
 
-	mutex_unlock(&hw_mgr->hw_mgr_mutex);
 	kfree(ctx_data->cdm_cmd);
 	ctx_data->cdm_cmd = NULL;
 	CAM_DBG(CAM_JPEG, "handle %llu", ctx_data);

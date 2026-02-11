@@ -1162,6 +1162,7 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	devm_kfree(&hdev->dev, td->fields);
 	td->fields = NULL;
 
+	pr_info("[USB] %s \n", __func__);
 	return 0;
 }
 
@@ -1395,6 +1396,11 @@ static const struct hid_device_id mt_devices[] = {
 	{  .driver_data = MT_CLS_NSMU,
 		MT_USB_DEVICE(USB_VENDOR_ID_ILITEK,
 			USB_DEVICE_ID_ILITEK_MULTITOUCH) },
+
+	/* Ilitek ViewSonicTD224 */
+	{  .driver_data = MT_CLS_NSMU,
+		MT_USB_DEVICE(USB_VENDOR_ID_ILITEK,
+			USB_DEVICE_ID_ILITEK_MULTITOUCH_1) },
 
 	/* MosArt panels */
 	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,

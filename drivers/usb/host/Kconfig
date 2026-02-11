@@ -810,3 +810,10 @@ config USB_UPD720X
 	---help---
 	  Enables support for the USB Host controller present on the
 	  Renesas UPD720X chipsets.
+
+config USB_GHCI_HCD
+	tristate "GHCI HCD support"
+	depends on USB
+	default m
+	help
+	  The Generic Host Controller Interface (GHCI)

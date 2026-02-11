@@ -49,6 +49,10 @@
 #include <soc/qcom/scm.h>
 #include "soc/qcom/secure_buffer.h"
 
+#if defined(CONFIG_PXLW_IRIS3)
+#include "dsi_iris3_api.h"
+#endif
+
 #define CREATE_TRACE_POINTS
 #include "sde_trace.h"
 
@@ -2842,6 +2846,8 @@ end:
 	drm_modeset_acquire_fini(&ctx);
 }
 
+bool dp_sus = false; /* ASUS BSP Display */
+
 static int sde_kms_pm_suspend(struct device *dev)
 {
 	struct drm_device *ddev;
@@ -2944,6 +2950,7 @@ retry:
 	}
 
 	/* commit the "disable all" state */
+	dp_sus = true; /* ASUS BSP Display */
 	ret = drm_atomic_commit(state);
 	if (ret < 0) {
 		DRM_ERROR("failed to disable crtcs, %d\n", ret);
@@ -3018,8 +3025,28 @@ static int sde_kms_pm_resume(struct device *dev)
 	/* enable hot-plug polling */
 	drm_kms_helper_poll_enable(ddev);
 
+	dp_sus = false; /* ASUS BSP Display */
 	return 0;
 }
+
+#if defined(CONFIG_PXLW_IRIS3)
+static int sde_kms_iris3_operate(struct msm_kms *kms,
+		u32 operate_type, struct msm_iris_operate_value *operate_value)
+{
+	int ret = -EINVAL;
+	struct sde_kms *sde_kms = NULL;
+
+	sde_kms = to_sde_kms(kms);
+
+	if (operate_type == DRM_MSM_IRIS_OPERATE_CONF) {
+		ret = iris3_operate_conf(operate_value);
+	} else if (operate_type == DRM_MSM_IRIS_OPERATE_TOOL) {
+		ret = iris3_operate_tool(operate_value);
+	}
+
+	return ret;
+}
+#endif
 
 static const struct msm_kms_funcs kms_funcs = {
 	.hw_init         = sde_kms_hw_init,
@@ -3050,6 +3077,9 @@ static const struct msm_kms_funcs kms_funcs = {
 	.get_address_space = _sde_kms_get_address_space,
 	.postopen = _sde_kms_post_open,
 	.check_for_splash = sde_kms_check_for_splash,
+#if defined(CONFIG_PXLW_IRIS3)
+	.iris3_operate = sde_kms_iris3_operate,
+#endif
 };
 
 /* the caller api needs to turn on clock before calling it */

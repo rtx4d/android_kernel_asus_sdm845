@@ -961,6 +961,11 @@ static int dsi_ctrl_copy_and_pad_cmd(struct dsi_ctrl *dsi_ctrl,
 	    (cmd_type == MIPI_DSI_GENERIC_READ_REQUEST_2_PARAM))
 		buf[3] |= BIT(5);
 
+#if defined(CONFIG_PXLW_IRIS3)
+	if ((buf[2] & 0x3f) == MIPI_DSI_GENERIC_READ_REQUEST_1_PARAM)
+		buf[3] |= BIT(5);
+#endif
+
 	*buffer = buf;
 	*size = len;
 

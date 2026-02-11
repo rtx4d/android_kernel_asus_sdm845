@@ -914,6 +914,7 @@ void xhci_hc_died(struct xhci_hcd *xhci)
 		return;
 
 	xhci_err(xhci, "xHCI host controller not responding, assume dead\n");
+	pr_info("[USB] %s Stop command ring failed, maybe the host is dead\n", __func__);
 	xhci->xhc_state |= XHCI_STATE_DYING;
 
 	xhci_cleanup_command_queue(xhci);

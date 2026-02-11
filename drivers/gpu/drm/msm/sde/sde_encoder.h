@@ -273,4 +273,20 @@ void sde_encoder_control_idle_pc(struct drm_encoder *enc, bool enable);
  */
 int sde_encoder_get_ctlstart_timeout_state(struct drm_encoder *enc);
 
+#if defined(CONFIG_PXLW_IRIS3)
+/**
+ * sde_encoder_rc_lock - lock the sde encoder resource control.
+ * @drm_enc:    Pointer to drm encoder structure
+ * @Return:     void.
+ */
+void sde_encoder_rc_lock(struct drm_encoder *drm_enc);
+
+/**
+ * sde_encoder_rc_unlock - unlock the sde encoder resource control.
+ * @drm_enc:    Pointer to drm encoder structure
+ * @Return:     void.
+ */
+void sde_encoder_rc_unlock(struct drm_encoder *drm_enc);
+#endif
+
 #endif /* __SDE_ENCODER_H__ */

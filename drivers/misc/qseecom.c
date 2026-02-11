@@ -1317,6 +1317,11 @@ static int __qseecom_unregister_listener(struct qseecom_dev_handle *data,
 	struct qseecom_command_scm_resp resp;
 	struct ion_handle *ihandle = NULL;		/* Retrieve phy addr */
 
+	if (data->released) {
+		pr_err("Don't unregister lsnr %d\n", data->listener.id);
+		return -EINVAL;
+	}
+
 	req.qsee_cmd_id = QSEOS_DEREGISTER_LISTENER;
 	req.listener_id = data->listener.id;
 	resp.result = QSEOS_RESULT_INCOMPLETE;

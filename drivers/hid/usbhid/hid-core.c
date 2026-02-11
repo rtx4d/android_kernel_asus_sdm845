@@ -49,6 +49,9 @@
  * Module parameters.
  */
 
+int data0 = 0;
+int data1 = 0;
+
 static unsigned int hid_mousepoll_interval;
 module_param_named(mousepoll, hid_mousepoll_interval, uint, 0644);
 MODULE_PARM_DESC(mousepoll, "Polling interval of mice");
@@ -262,6 +265,7 @@ static int usbhid_restart_ctrl_queue(struct usbhid_device *usbhid)
 	return kicked;
 }
 
+extern bool hid_key_enable;
 /*
  * Input interrupt completion handler.
  */
@@ -272,6 +276,11 @@ static void hid_irq_in(struct urb *urb)
 	struct usbhid_device 	*usbhid = hid->driver_data;
 	int			status;
 
+	if (hid->vendor == 0x0c45 && hid->product == 0x7603) {
+		data0 = usbhid->inbuf[0];
+		data1 = usbhid->inbuf[1];
+	}
+
 	switch (urb->status) {
 	case 0:			/* success */
 		usbhid->retry_delay = 0;
@@ -279,9 +288,16 @@ static void hid_irq_in(struct urb *urb)
 			break;
 		usbhid_mark_busy(usbhid);
 		if (!test_bit(HID_RESUME_RUNNING, &usbhid->iofl)) {
-			hid_input_report(urb->context, HID_INPUT_REPORT,
-					 urb->transfer_buffer,
-					 urb->actual_length, 1);
+
+			// Skip ITE HID keyboard when display off
+			if (!hid_key_enable && hid->vendor == 0x048D && hid->product == 0x8910) {
+				printk("[EC_HID] Disable ITE 8910 HID keyboard!!!\n");
+			}else {
+				hid_input_report(urb->context, HID_INPUT_REPORT,
+						 urb->transfer_buffer,
+						 urb->actual_length, 1);
+			}
+
 			/*
 			 * autosuspend refused while keys are pressed
 			 * because most keyboards don't wake up when
@@ -1297,6 +1313,7 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 	size_t len;
 	int ret;
 
+	hid_info(intf, "[USB] usbhid_probe\n");
 	dbg_hid("HID probe called for ifnum %d\n",
 			intf->altsetting->desc.bInterfaceNumber);
 
@@ -1379,6 +1396,16 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 			hid_err(intf, "can't add hid device: %d\n", ret);
 		goto err_free;
 	}
+	 /* enable suspend/resume support for HID devices. */
+	if ((le16_to_cpu(dev->descriptor.idVendor) == 0x0BDA) &&
+	 ((le16_to_cpu(dev->descriptor.idProduct) == 0x480F)
+	||(le16_to_cpu(dev->descriptor.idProduct) == 0x4A41)
+	||(le16_to_cpu(dev->descriptor.idProduct) == 0x4A43)
+	||(le16_to_cpu(dev->descriptor.idProduct) == 0x4A45)
+	||(le16_to_cpu(dev->descriptor.idProduct) == 0x48F0))) {
+		hid_info(intf, "[USB] Inbox HID enable autosuspend\n");
+		usb_enable_autosuspend(dev);
+	}
 
 	return 0;
 err_free:
@@ -1391,10 +1418,18 @@ err:
 static void usbhid_disconnect(struct usb_interface *intf)
 {
 	struct hid_device *hid = usb_get_intfdata(intf);
+	struct usb_device *dev = interface_to_usbdev(intf);
 	struct usbhid_device *usbhid;
 
+	hid_info(intf, "[USB] usbhid_disconnect\n");
 	if (WARN_ON(!hid))
 		return;
+
+	if ((le16_to_cpu(dev->descriptor.idVendor) == 0x0BDA) &&
+	(le16_to_cpu(dev->descriptor.idProduct) == 0x480F)){
+		hid_info(intf, "[USB] Inbox HID disable autosuspend\n");
+		usb_disable_autosuspend(dev);
+	}
 
 	usbhid = hid->driver_data;
 	spin_lock_irq(&usbhid->lock);	/* Sync with error and led handlers */
@@ -1513,8 +1548,11 @@ static int hid_post_reset(struct usb_interface *intf)
 int usbhid_get_power(struct hid_device *hid)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
+	int status;
+	status = usb_autopm_get_interface(usbhid->intf);
+	printk("[UHID-CORE] usbhid_get_power, usage_count=%d , status=%d\n", atomic_read(&usbhid->intf->dev.power.usage_count), status);
 
-	return usb_autopm_get_interface(usbhid->intf);
+	return status;
 }
 
 void usbhid_put_power(struct hid_device *hid)
@@ -1522,6 +1560,7 @@ void usbhid_put_power(struct hid_device *hid)
 	struct usbhid_device *usbhid = hid->driver_data;
 
 	usb_autopm_put_interface(usbhid->intf);
+	printk("[UHID-CORE] usbhid_put_power, usage_count=%d\n", atomic_read(&usbhid->intf->dev.power.usage_count));
 }
 
 
@@ -1589,6 +1628,7 @@ static int hid_suspend(struct usb_interface *intf, pm_message_t message)
 		goto failed;
 	}
 	dev_dbg(&intf->dev, "suspend\n");
+	printk("[USB_PM] hid_suspend, dev=%s\n", dev_name(&intf->dev));
 	return status;
 
  failed:
@@ -1603,6 +1643,7 @@ static int hid_resume(struct usb_interface *intf)
 
 	status = hid_resume_common(hid, true);
 	dev_dbg(&intf->dev, "resume status %d\n", status);
+	printk("[USB_PM] hid_resume, dev=%s\n", dev_name(&intf->dev));
 	return 0;
 }
 

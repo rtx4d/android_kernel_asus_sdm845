@@ -3635,6 +3635,8 @@ drm_extract_hdr_db(struct drm_connector *connector, const u8 *db)
 
 	u8 len = 0;
 
+	return; /* ASUS BSP Display */
+
 	if (!db)
 		return;
 

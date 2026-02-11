@@ -27,6 +27,8 @@
 
 #define MULTIPLE_CONN_DETECTED(x) (x > 1)
 
+extern bool g_enter_AOD;
+
 struct msm_commit {
 	struct drm_device *dev;
 	struct drm_atomic_state *state;
@@ -37,6 +39,7 @@ struct msm_commit {
 
 static BLOCKING_NOTIFIER_HEAD(msm_drm_notifier_list);
 
+EXPORT_SYMBOL(msm_drm_register_client);
 /**
  * msm_drm_register_client - register a client notifier
  * @nb: notifier block to callback on events
@@ -396,6 +399,11 @@ void msm_atomic_helper_commit_modeset_disables(struct drm_device *dev,
 	msm_crtc_set_mode(dev, old_state);
 }
 
+/* ASUS BSP Display, add for dfps +++ */
+extern int lastFps;
+extern bool changeFps/* ASUS BSP Display, add for dfps */;
+/* ASUS BSP Display, add for dfps --- */
+
 /**
  * msm_atomic_helper_commit_modeset_enables - modeset commit to enable outputs
  * @dev: DRM device
@@ -422,6 +430,7 @@ static void msm_atomic_helper_commit_modeset_enables(struct drm_device *dev,
 	struct msm_kms *kms = priv->kms;
 	int bridge_enable_count = 0;
 	int i, blank;
+	int type = 0; /* ASUS BSP Display, add for dfps */
 
 	SDE_ATRACE_BEGIN("msm_enable");
 	for_each_crtc_in_state(old_state, crtc, old_crtc_state, i) {
@@ -459,6 +468,19 @@ static void msm_atomic_helper_commit_modeset_enables(struct drm_device *dev,
 
 		if (!connector->state->best_encoder)
 			continue;
+
+		/* ASUS BSP Display, add for dfps +++ */
+		if (changeFps && !g_enter_AOD) {
+			pr_err("[Display] %s :: adjust to %d command.\n", __func__, lastFps);
+			if (lastFps == 60)
+				type = 1;
+			else if (lastFps == 90)
+				type = 0;
+
+			drm_bridge_asusFps(connector->state->best_encoder->bridge, type);
+			changeFps = false;
+		}
+		/* ASUS BSP Display, add for dfps --- */
 
 		if (!connector->state->crtc->state->active ||
 		    !drm_atomic_crtc_needs_modeset(

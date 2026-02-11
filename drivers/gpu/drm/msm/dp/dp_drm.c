@@ -94,6 +94,9 @@ static u32 choose_best_format(struct dp_display *dp,
 	return MSM_MODE_FLAG_COLOR_FORMAT_RGB444;
 }
 
+/* ASUS BSP Display +++ */
+extern char *asus_vendor;
+
 static void convert_to_dp_mode(const struct drm_display_mode *drm_mode,
 			struct dp_display_mode *dp_mode, struct dp_display *dp)
 {
@@ -757,6 +760,16 @@ enum drm_mode_status dp_connector_mode_valid(struct drm_connector *connector,
 
 	if (pclk > dp_disp->max_pclk_khz)
 		return MODE_BAD;
+
+	/* ASUS BSP Display +++ */
+	if (asus_vendor && !strncmp(asus_vendor, "ACR", 3)) {
+		if (mode->vrefresh < 60)
+			return MODE_BAD;
+	}
+
+	if (mode->vrefresh > 90)
+		return MODE_BAD;
+	/* ASUS BSP Display --- */
 
 	if (debug->debug_en && (mode->hdisplay != debug->hdisplay ||
 			mode->vdisplay != debug->vdisplay ||
