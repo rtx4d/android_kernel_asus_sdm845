@@ -45,6 +45,9 @@
 /* USB external connector */
 #define EXTCON_USB		1
 #define EXTCON_USB_HOST		2
+//jonathan
+#define EXTCON_USB_CC		3
+#define EXTCON_USB_SPEED	4
 
 /* Charging external connector */
 #define EXTCON_CHG_USB_SDP	5	/* Standard Downstream Port */
@@ -203,6 +206,7 @@ struct extcon_dev {
 	const char *name;
 	const unsigned int *supported_cable;
 	const u32 *mutually_exclusive;
+	const char *fnode_name;
 
 	/* Internal data. Please do not set. */
 	struct device dev;
@@ -318,6 +322,7 @@ extern const char *extcon_get_edev_name(struct extcon_dev *edev);
 
 extern int extcon_blocking_sync(struct extcon_dev *edev, unsigned int id,
 							u8 val);
+extern int asus_extcon_set_state_sync(struct extcon_dev *edev, int cable_state);	//ASUS BSP Austin_T +++
 #else /* CONFIG_EXTCON */
 static inline int extcon_dev_register(struct extcon_dev *edev)
 {
@@ -490,4 +495,10 @@ static inline int extcon_set_cable_state_(struct extcon_dev *edev, unsigned int 
 {
 	return extcon_set_state_sync(edev, id, cable_state);
 }
+// ASUS BSP Austin_T +++
+static inline int asus_extcon_set_cable_state_(struct extcon_dev *edev, int cable_state)
+{
+	return asus_extcon_set_state_sync(edev, cable_state);
+}
+// ASUS BSP Austin_T ---
 #endif /* __LINUX_EXTCON_H__ */
