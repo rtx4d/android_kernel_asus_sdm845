@@ -1869,7 +1869,7 @@ static irqreturn_t qpnp_flash_led_irq_handler(int irq, void *_led)
 			asus_flash_set_led_fault(led_status1);//ASUS_BSP Zhengwei "check fault value in ATD"
 			pr_emerg("led short/open fault detected! led_status1=%x\n",
 				led_status1);
-
+			}
 		if (led_status2 & FLASH_LED_VPH_DROOP_FAULT_MASK)
 			pr_emerg("led vph_droop fault detected!\n");
 		}

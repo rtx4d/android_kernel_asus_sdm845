@@ -52,7 +52,7 @@ static struct workqueue_struct *wq;
 /*==========================================================================*/
 /* METHODS                                                                  */
 /*==========================================================================*/
-int workqueue_init(void) {
+int workqueue_init_snt(void) {
     PRINT_FUNC();
     wq = create_workqueue(QUEUE_NAME);
     if (!wq) {
@@ -63,7 +63,7 @@ int workqueue_init(void) {
     return 0;
 }
 
-void workqueue_cleanup() {
+void workqueue_cleanup(void) {
     destroy_workqueue(wq);
     wq = NULL;
 }

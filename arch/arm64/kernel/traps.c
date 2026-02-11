@@ -343,7 +343,7 @@ void die(const char *str, struct pt_regs *regs, int err)
 	}
 
 	if (in_interrupt()) {
-		rintk("DIE: in int %s", str);
+		printk("DIE: in int %s", str);
 	}
 	if (panic_on_oops) {
 		printk("DIE: %s", str);

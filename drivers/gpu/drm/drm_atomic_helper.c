@@ -470,6 +470,14 @@ mode_fixup(struct drm_atomic_state *state)
  * RETURNS:
  * Zero for success or -errno
  */
+
+/* ASUS BSP Display, add for dfps +++ */
+bool gFirstBoot = true;
+struct drm_display_mode *gDispMode;
+int lastFps = 90;
+bool changeFps = false;
+/* ASUS BSP Display, add for dfps --- */
+
 int
 drm_atomic_helper_check_modeset(struct drm_device *dev,
 				struct drm_atomic_state *state)

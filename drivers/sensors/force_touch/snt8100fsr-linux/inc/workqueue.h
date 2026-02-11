@@ -24,7 +24,7 @@
 #ifndef WORKQUEUE_H
 #define WORKQUEUE_H
 
-int workqueue_init(void);
+int workqueue_init_snt(void);
 void workqueue_cleanup(void);
 void *workqueue_alloc_work(size_t work_size, work_func_t work_func);
 void workqueue_free_work(void *work);

@@ -2662,7 +2662,7 @@ out:
 	return rc;
 }
 
-int security_get_aps()
+int security_get_aps(void)
 {
 	return security_get_ps(DAPS_TYPE);
 }
@@ -2682,7 +2682,7 @@ int security_set_asus(int value)
 	return rc;
 }
 
-int security_get_asus()
+int security_get_asus(void)
 {
 	return security_get_ps(SAVELOG_DOMAIN);
 }
@@ -2701,7 +2701,7 @@ int security_set_ec(int value)
 	return rc;
 }
 
-int security_get_ec()
+int security_get_ec(void)
 {
 	return security_get_ps(EC_DOMAIN);
 }

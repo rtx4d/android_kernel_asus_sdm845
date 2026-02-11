@@ -6556,6 +6556,7 @@ static struct thermal_zone_of_device_ops fg_gen3_tz_ops = {
 
 // ASUS BSP Austin_T : Add gauge proc/driver interface +++
 static int gaugeIC_status_proc_read(struct seq_file *buf, void *v)
+{
 	int result = 0, val = 0;
 	if (fg_get_battery_current(g_fgChip, &val) == 0) {
 		result = 1;

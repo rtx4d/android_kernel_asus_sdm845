@@ -766,9 +766,9 @@ static int dsi_display_status_reg_read(struct dsi_display *display)
 	rc = dsi_display_validate_status(m_ctrl, display->panel);
 	if (rc <= 0) {
 		pr_err("[%s] read status failed on master,rc=%d\n",
+		       display->name, rc);
 		/* ASUS BSP Display, add for esd check */
 		esdFail = true;
-		       display->name, rc);
 		goto exit;
 	}
 

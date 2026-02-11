@@ -2741,7 +2741,6 @@ void backup_PTC_data(int input, char* path)
 
 	CHG_DBG("%s : %s\n", __func__, buf);
 }
-	platform_set_drvdata(pdev, chip);
 
 	// ASUS BSP charger : Add attributes +++
 static ssize_t boot_completed_store(struct device *dev,

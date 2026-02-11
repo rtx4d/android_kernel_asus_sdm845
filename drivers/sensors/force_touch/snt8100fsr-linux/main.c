@@ -70,9 +70,9 @@ int main_init(void) {
     PRINT_FUNC();
 
     // Initialize our workqueue system for background processing
-    ret = workqueue_init();
+    ret = workqueue_init_snt();
     if (ret != 0) {
-        PRINT_CRIT("workqueue_init() failed");
+        PRINT_CRIT("workqueue_init_snt() failed");
         goto main_init_failed;
     }
 

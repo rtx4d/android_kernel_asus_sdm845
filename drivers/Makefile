@@ -194,13 +194,13 @@ obj-y				+= dt_power/
 obj-y				+= pixelworks/
 
 #Texura
-ifdef CONFIG_TEXURA_USERDEBUG
-	obj-y			+= ntfs/userdebug/
-	obj-y			+= exfat/userdebug/
-else
-	obj-y			+= ntfs/user/
-	obj-y			+= exfat/user/
-endif
+#ifdef CONFIG_TEXURA_USERDEBUG
+#	obj-y			+= ntfs/userdebug/
+#	obj-y			+= exfat/userdebug/
+#else
+#	obj-y			+= ntfs/user/
+#	obj-y			+= exfat/user/
+#endif
 
 #ASUS_BSP_Vibrator +++, mark_guo
 obj-$(CONFIG_SND_SOC_TAS2560)	+= motor/tas2560sw-haptics/

@@ -1967,6 +1967,20 @@ static int pd_select_apdo(struct usbpd *pd, int pdo_pos, int uv, int ua)
 	return 0;
 }
 
+static inline const char *src_current(enum power_supply_typec_mode typec_mode)
+{
+	switch (typec_mode) {
+	case POWER_SUPPLY_TYPEC_SOURCE_DEFAULT:
+		return "default";
+	case POWER_SUPPLY_TYPEC_SOURCE_MEDIUM:
+		return "medium - 1.5A";
+	case POWER_SUPPLY_TYPEC_SOURCE_HIGH:
+		return "high - 3.0A";
+	default:
+		return "";
+	}
+}
+
 int usbpd_request_pdo(struct usbpd *pd, u32 pdo, u32 uv, u32 ua)
 {
 	int ret;
@@ -3661,20 +3675,6 @@ sm_done:
 
 	if (!pd->sm_queued)
 		pm_relax(&pd->dev);
-}
-
-static inline const char *src_current(enum power_supply_typec_mode typec_mode)
-{
-	switch (typec_mode) {
-	case POWER_SUPPLY_TYPEC_SOURCE_DEFAULT:
-		return "default";
-	case POWER_SUPPLY_TYPEC_SOURCE_MEDIUM:
-		return "medium - 1.5A";
-	case POWER_SUPPLY_TYPEC_SOURCE_HIGH:
-		return "high - 3.0A";
-	default:
-		return "";
-	}
 }
 
 static int psy_changed(struct notifier_block *nb, unsigned long evt, void *ptr)

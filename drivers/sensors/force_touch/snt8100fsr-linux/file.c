@@ -79,7 +79,7 @@ int file_size(struct file *file, int *p_size) {
     if (file) {
         if (p_size) {
             //error = vfs_getattr(file->f_vfsmnt, file->f_dentry, &stat);
-	    error = vfs_getattr(&file->f_path, &stat);
+	    error = vfs_getattr(&(file->f_path), &stat, STATX_TYPE | STATX_MODE, AT_STATX_SYNC_AS_STAT);
             *p_size = stat.size;
             error = 0;
         } else {

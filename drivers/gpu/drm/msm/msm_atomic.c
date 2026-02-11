@@ -39,7 +39,6 @@ struct msm_commit {
 
 static BLOCKING_NOTIFIER_HEAD(msm_drm_notifier_list);
 
-EXPORT_SYMBOL(msm_drm_register_client);
 /**
  * msm_drm_register_client - register a client notifier
  * @nb: notifier block to callback on events
